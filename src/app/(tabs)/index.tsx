@@ -29,7 +29,7 @@ export default function App() {
                           <View className="home-header">
                               <View className="home-user">
                                   <Image className="home-avatar" source={images.avatar}></Image>
-                                  <Text className="home-user-name">{HOME_USER.name}</Text>
+                                  <Text className="home-user-name font-bold">{HOME_USER.name}</Text>
                               </View>
 
                               <Image className="home-add-icon" source={icons.add}></Image>
