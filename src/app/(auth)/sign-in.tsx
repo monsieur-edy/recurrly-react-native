@@ -1,15 +1,55 @@
-import {View, Text} from 'react-native';
-import {Link} from "expo-router";
+import {useAuth} from '@clerk/expo';
+import {useHostedAuth} from '@clerk/expo/hosted-auth';
+import {Link} from 'expo-router';
+import {ActivityIndicator, Button, StyleSheet, Text, View} from 'react-native';
 
-const SignIn = () => {
+export default function SignIn() {
+  const {isLoaded} = useAuth();
+  const {startHostedAuth} = useHostedAuth();
+
+  const handleSignIn = async () => {
+    try {
+      await startHostedAuth({mode: 'sign-in'});
+    } catch (error) {
+      console.error('Sign in error:', error);
+    }
+  };
+
+  if (!isLoaded) {
     return (
-        <View>
-            <Text>SignIn</Text>
-            <Link href="/(auth)/sign-up" className="mt-4 rounded bg-primary text-white p-4">Create account</Link>
-
-            <Link href="/" className="mt-4 rounded bg-primary text-white p-4">Home</Link>
-        </View>
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+      </View>
     );
-};
+  }
 
-export default SignIn;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Sign in</Text>
+      <Button title="Sign in" onPress={handleSignIn} />
+      <Link href="/(auth)/sign-up" style={styles.link}>
+        Don&apos;t have an account? Sign up
+      </Link>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    gap: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  link: {
+    color: '#208AEF',
+    fontSize: 16,
+    marginTop: 12,
+  },
+});

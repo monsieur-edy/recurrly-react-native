@@ -1,9 +1,10 @@
 import "../../global.css"
-import {FlatList, Image, Text, View} from "react-native";
+import {useAuth, useUser} from "@clerk/expo";
+import {FlatList, Image, Text, TouchableOpacity, View} from "react-native";
 import {SafeAreaView as RNSafeAreaView} from "react-native-safe-area-context";
 import { styled } from "nativewind";
 import images from "@/constants/images";
-import {HOME_BALANCE, HOME_SUBSCRIPTIONS, HOME_USER, UPCOMING_SUBSCRIPTIONS} from "@/constants/data";
+import {HOME_BALANCE, HOME_SUBSCRIPTIONS, UPCOMING_SUBSCRIPTIONS} from "@/constants/data";
 import {icons} from "@/constants/icons";
 import {formatCurrency} from "@/lib/utils";
 import dayjs from "dayjs";
@@ -17,22 +18,25 @@ const SafeAreaView = styled(RNSafeAreaView)
 
 export default function App() {
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
+    const {signOut} = useAuth();
+    const {user} = useUser();
+
+    const userEmail = user?.emailAddresses[0]?.emailAddress ?? 'User';
 
   return (
       <SafeAreaView className="flex-1 bg-background p-5">
-
-
-
               <FlatList
                   ListHeaderComponent={() => (
                       <>
                           <View className="home-header">
                               <View className="home-user">
                                   <Image className="home-avatar" source={images.avatar}></Image>
-                                  <Text className="home-user-name">{HOME_USER.name}</Text>
+                                  <Text className="home-user-name" numberOfLines={1}>{userEmail}</Text>
                               </View>
 
-                              <Image className="home-add-icon" source={icons.add}></Image>
+                              <TouchableOpacity onPress={() => signOut()}>
+                                <Image className="home-add-icon" source={icons.add}></Image>
+                              </TouchableOpacity>
                           </View>
 
                           <View className="home-balance-card">
