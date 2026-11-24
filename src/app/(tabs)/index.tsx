@@ -1,5 +1,5 @@
 import "../../global.css"
-import {FlatList, Image, Text, View} from "react-native";
+import {FlatList, Image, Pressable, Text, View} from "react-native";
 import {SafeAreaView as RNSafeAreaView} from "react-native-safe-area-context";
 import { styled } from "nativewind";
 import images from "@/constants/images";
@@ -10,13 +10,15 @@ import dayjs from "dayjs";
 import ListHeading from "@/components/ListHeading";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/components/SubscriptionCard";
+import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import {useState} from "react";
-import statefulPressable from "react-native-gesture-handler/src/v3/components/StatefulPressable";
 
 const SafeAreaView = styled(RNSafeAreaView)
 
 export default function App() {
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
+    const [subscriptions, setSubscriptions] = useState(HOME_SUBSCRIPTIONS);
+    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
   return (
       <SafeAreaView className="flex-1 bg-background p-5">
@@ -32,7 +34,13 @@ export default function App() {
                                   <Text className="home-user-name font-bold">{HOME_USER.name}</Text>
                               </View>
 
-                              <Image className="home-add-icon" source={icons.add}></Image>
+                              <Pressable
+                                  accessibilityRole="button"
+                                  accessibilityLabel="Create subscription"
+                                  onPress={() => setIsCreateModalVisible(true)}
+                              >
+                                  <Image className="home-add-icon" source={icons.add}></Image>
+                              </Pressable>
                           </View>
 
                           <View className="home-balance-card">
@@ -62,11 +70,10 @@ export default function App() {
                           <ListHeading title="All subscriptions" />
                       </>
                   )}
-                  data={HOME_SUBSCRIPTIONS}
+                  data={subscriptions}
                   renderItem={({ item }) => (
                       <SubscriptionCard
                           {...item}
-                          billing={""}
                           expanded={expandedSubscriptionId === item.id}
                           onPress={() => setExpandedSubscriptionId((currentId) => (currentId === item.id ? null : item.id))}                      />
                   )}
@@ -76,6 +83,11 @@ export default function App() {
                   ListEmptyComponent={<Text className="home-empty-state">No subscription yet.</Text>}
                   contentContainerClassName="pb-20"
               />
+          <CreateSubscriptionModal
+              visible={isCreateModalVisible}
+              onClose={() => setIsCreateModalVisible(false)}
+              onCreate={(subscription) => setSubscriptions((currentSubscriptions) => [subscription, ...currentSubscriptions])}
+          />
       </SafeAreaView>
   );
 }
